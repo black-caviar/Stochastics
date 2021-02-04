@@ -79,19 +79,22 @@ fprintf("Number of trials: %e\n", M*N);
 
 %% Part C GPU Compute
 % Lets try using GPU 
-M = 1e6;
-N = 1e3;
-n = 0;
-for i = 0:N
-    rolls = randi(6,3,3,6,M,'uint8','gpuArray');
-    x = sum(rolls,1); % get 3 scores 
-    y = sum(x==18,2); % check if 18
-    n = n + squeeze(sum(sum(y,3)==6));
+try 
+    M = 1e6;
+    N = 1e3;
+    n = 0;
+    for i = 0:N
+        rolls = randi(6,3,3,6,M,'uint8','gpuArray');
+        x = sum(rolls,1); % get 3 scores 
+        y = sum(x==18,2); % check if 18
+        n = n + squeeze(sum(sum(y,3)==6));
+    end
+    fprintf("Number of perfect humans found: %d\n", n);
+    fprintf("Probability of perfect human: %e\n", n/(M*N));
+    fprintf("Number of trials: %e\n", M*N);
+catch
+    fprintf("No GPU available, skipping\n");
 end
-fprintf("Number of perfect humans found: %d\n", n);
-fprintf("Probability of perfect human: %e\n", n/(M*N));
-fprintf("Number of trials: %e\n", M*N);
-
 %% Part C theoretical
 fprintf("Probability of ideal character from PMF: %e", pmf_Z(18)^6);
 
@@ -104,19 +107,22 @@ n = squeeze(sum(sum(y,3)==6));
 fprintf("Sampled probability of totally average character: %e\n", n/M);
 
 %% Part D GPU Compute
-M = 1e6;
-N = 1e3;
-%M = 5;
-n = 0;
-for i = 0:N
-    rolls = randi(6,3,3,6,M,'uint8', 'gpuArray'); 
-    x = sum(rolls,1); % get 3 scores 
-    y = sum(x==9,2) & ~sum((x>9),2); % filter for 9's
-    n = n + squeeze(sum(sum(y>0,3)==6)); % increment the number of Keenes
+try
+    M = 1e6;
+    N = 1e3;
+    %M = 5;
+    n = 0;
+    for i = 0:N
+        rolls = randi(6,3,3,6,M,'uint8', 'gpuArray'); 
+        x = sum(rolls,1); % get 3 scores 
+        y = sum(x==9,2) & ~sum((x>9),2); % filter for 9's
+        n = n + squeeze(sum(sum(y>0,3)==6)); % increment the number of Keenes
+    end
+    fprintf("Number of totally average humans found: %d\n", n);
+    fprintf("Probability of totally average human: %e\n", n/(M*N));
+    fprintf("Number of trials: %e\n", M*N);
+catch
+    fprintf("No GPU available, skipping\n");
 end
-fprintf("Number of totally average humans found: %d\n", n);
-fprintf("Probability of totally average human: %e\n", n/(M*N));
-fprintf("Number of trials: %e\n", M*N);
-
 %% Part D theoretical
 fprintf("Probability of totally average character from PMF: %e", pmf_Z(9)^6);
