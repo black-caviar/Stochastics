@@ -1,0 +1,321 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>q2</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-02-03"><meta name="DC.source" content="q2.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">EpicQUESTion 2</a></li><li><a href="#2">Part A</a></li><li><a href="#4">Part B</a></li><li><a href="#5">Part C</a></li><li><a href="#6">Part C Theoretical</a></li><li><a href="#7">Part D</a></li><li><a href="#8">Part D Theoretical</a></li><li><a href="#9">Part E</a></li><li><a href="#10">Part E Theoretical</a></li></ul></div><h2 id="1">EpicQUESTion 2</h2><pre class="codeinput">M = 10;
+M = 1e6; <span class="comment">% number of experiments to perform</span>
+</pre><h2 id="2">Part A</h2><p>Average troll health <img src="q2_eq10612046976350029280.png" alt="$= .25*1 + .25*2 + .25*3 +.25*4 = 2.5$"></p><pre class="codeinput">hp = randi(4,M,1); <span class="comment">% set of 1d4</span>
+hp_ave = mean(hp); <span class="comment">% average troll health</span>
+fprintf(<span class="string">"Average troll health: %f\n"</span>, hp_ave);
+</pre><pre class="codeoutput">Average troll health: 2.499487
+</pre><p>Average fireball damage <img src="q2_eq17857470153390234711.png" alt="$= 0*1 + .25*2 + .50*3 + .25*4 = 3$"></p><pre class="codeinput">f = randi(2,M,2); <span class="comment">% set of 2d2</span>
+f_dmg = sum(f,2); <span class="comment">% compute damage</span>
+f_ave = mean(f_dmg); <span class="comment">% average fireball damage</span>
+f_3 = sum(f_dmg&gt;3)/M; <span class="comment">% probability damage &gt; 3</span>
+fprintf(<span class="string">"Average fireball damage: %f\n"</span>, f_ave);
+fprintf(<span class="string">"Probability fireball &gt;3: %f\n"</span>, f_3);
+</pre><pre class="codeoutput">Average fireball damage: 2.999823
+Probability fireball &gt;3: 0.250134
+</pre><h2 id="4">Part B</h2><p>F = event of fireball damage T1, T2 = event of troll hp</p><pre class="codeinput">pmf_F = [0; 0.25; 0.5; 0.25];
+pmf_T = ones(4, 1).*0.25;
+
+figure; stem(pmf_F); title(<span class="string">"PMF of 2d3"</span>);
+figure; stem(pmf_T); title(<span class="string">"PMF of 1d4"</span>);
+</pre><img vspace="5" hspace="5" src="q2_01.png" alt=""> <img vspace="5" hspace="5" src="q2_02.png" alt=""> <h2 id="5">Part C</h2><pre class="codeinput">hp = randi(4,M,2); <span class="comment">% make M banks of 2 trolls</span>
+f = randi(2,M,2); <span class="comment">% throw 2 die for each spell</span>
+f_dmg = sum(f,2); <span class="comment">% compute fireball damage</span>
+hp_new = hp - f_dmg; <span class="comment">% attack troll</span>
+kia = hp_new &lt;= 0; <span class="comment">% see if dead</span>
+dead = sum(kia,2); <span class="comment">% count the dead</span>
+fprintf(<span class="string">"Probability of 2 kill: %f\n"</span>, sum(dead == 2)/M);
+</pre><pre class="codeoutput">Probability of 2 kill: 0.593951
+</pre><h2 id="6">Part C Theoretical</h2><pre class="codeinput">theoretical_dead = 0;
+prob_space = [1,2,3,4];
+<span class="comment">%for loop for each troll, iterating through combinations</span>
+<span class="comment">%using conditional probability aptly for each case</span>
+<span class="comment">%e.g. set of troll hp of [1,1] is killed, at the very least when fireball</span>
+<span class="comment">%&gt;=1, such that p(fireball&gt;=1|[1,1]) = 1*(1/4)^2</span>
+<span class="keyword">for</span> i = prob_space
+    <span class="keyword">for</span> j = prob_space
+        <span class="keyword">if</span> i ==4 || j ==4
+            theoretical_dead = theoretical_dead+(1/4)^3;
+        <span class="keyword">elseif</span> i == 3 || j==3
+            theoretical_dead = theoretical_dead + (3/4)*(1/4)^2;
+        <span class="keyword">elseif</span> i==2 || j ==2
+            theoretical_dead = theoretical_dead + (1/4)^2;
+        <span class="keyword">else</span>
+            theoretical_dead = theoretical_dead + (1/4)^2;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+fprintf(<span class="string">"Theoretical probability of 2 kill: %f\n"</span>, theoretical_dead);
+</pre><pre class="codeoutput">Theoretical probability of 2 kill: 0.593750
+</pre><h2 id="7">Part D</h2><p>Each troll killed independently, troll must have health of at least 3 otherwise any fireball will kill. Fireball must do less than 3 damage otherwise it will kill any troll.</p><pre class="codeinput">kia(dead~=1,:)=1; <span class="comment">% find lone survivors</span>
+survivor_hp = hp_new(~kia); <span class="comment">% check their health</span>
+fprintf(<span class="string">"Mean survivor health: %f\n"</span>, mean(survivor_hp));
+</pre><pre class="codeoutput">Mean survivor health: 1.200869
+</pre><h2 id="8">Part D Theoretical</h2><p>R = event of the remaining hp of one troll given that exactly one troll   is dead, 0 otherwise</p><p>k = event that exactly one troll is dead</p><p>E(P(R given k)) = sum(r * P(R=r given k))   = sum(r * P(R=r and k)/P(k))</p><pre class="codeinput">joint_pmf_TF = pmf_T*pmf_T';
+joint_pmf_TF = reshape(joint_pmf_TF(:)*pmf_F', 4, 4, 4);
+
+[T1, T2, F] = ndgrid(1:4);
+
+R = (F &gt;= T1 &amp; F &lt; T2).*(T2 - F) + <span class="keyword">...</span>
+    (F &gt;= T2 &amp; F &lt; T1).*(T1 - F);
+
+p_2d = 0;
+<span class="keyword">for</span> r=1:2
+    p_2d = p_2d + r*sum(joint_pmf_TF(R == r));
+<span class="keyword">end</span>
+
+p_2d = p_2d/sum(joint_pmf_TF(R &gt; 0));
+fprintf(<span class="string">"Theoretical mean survivor health: %f\n"</span>, p_2d);
+</pre><pre class="codeoutput">Theoretical mean survivor health: 1.200000
+</pre><h2 id="9">Part E</h2><p>50% chance of hitting with sword, 50% change of hitting with hammer given sword hit I didn't compute the damage probabilities</p><pre class="codeinput">roll_sword = randi([0,1],M,1); <span class="comment">% generate sword hits</span>
+sword_dmg = sum(randi(6,M,2),2); <span class="comment">% generate sword damage</span>
+roll_hammer = randi([0,1],M,1); <span class="comment">% generate potential hammer hits</span>
+hammer_dmg = randi(4,M,1); <span class="comment">% generate pontential hammer damage</span>
+<span class="comment">% conditional probability achieved by requiring sword and hammer to be true</span>
+dmg = roll_sword.*sword_dmg + roll_sword.*roll_hammer.*hammer_dmg;
+fprintf(<span class="string">"Mean Shitvam damage: %f\n"</span>, mean(dmg));
+</pre><pre class="codeoutput">Mean Shitvam damage: 4.124173
+</pre><h2 id="10">Part E Theoretical</h2><p>X = dice roll, S = sword damage, H = hammer damage, SH = sword and hammer damage, O = 0 damage, D = total damage,</p><p><img src="q2_eq14011390839074084367.png" alt="$P(D) = 0.5*P(O) + 0.25*P(S) + 0.25*P(SH)$"></p><p>note that prob of 0 damage is not counted in expectation</p><pre class="codeinput">joint_pmf_X = ones(6, 6).*(1/6^2);
+
+[X1, X2] = meshgrid(1:6);
+S = X1 + X2;
+
+pmf_S = zeros(16, 1);
+<span class="keyword">for</span> s=2:12
+    pmf_S(s) = sum(joint_pmf_X(S == s));
+<span class="keyword">end</span>
+
+pmf_H = zeros(16, 1);
+pmf_H(1:4) = 1/4;
+
+joint_pmf_SH = pmf_S*pmf_H';
+[S, H] = meshgrid(1:16);
+SH = S + H;
+
+pmf_SH = zeros(16, 1);
+<span class="keyword">for</span> sh=2:16
+    pmf_SH(sh) = sum(joint_pmf_SH(SH == sh));
+<span class="keyword">end</span>
+
+pmf_D = 0.25.*pmf_S + 0.25.*pmf_SH;
+
+p_2e = sum((1:16).*pmf_D');
+fprintf(<span class="string">"Theoretical Mean Shitvam damage: %f\n"</span>, p_2e);
+</pre><pre class="codeoutput">Theoretical Mean Shitvam damage: 4.125000
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% EpicQUESTion 2
+M = 10;
+M = 1e6; % number of experiments to perform 
+%% Part A
+% Average troll health $= .25*1 + .25*2 + .25*3 +.25*4 = 2.5$
+hp = randi(4,M,1); % set of 1d4
+hp_ave = mean(hp); % average troll health
+fprintf("Average troll health: %f\n", hp_ave);
+
+%%
+% Average fireball damage $= 0*1 + .25*2 + .50*3 + .25*4 = 3$
+f = randi(2,M,2); % set of 2d2
+f_dmg = sum(f,2); % compute damage 
+f_ave = mean(f_dmg); % average fireball damage
+f_3 = sum(f_dmg>3)/M; % probability damage > 3
+fprintf("Average fireball damage: %f\n", f_ave);
+fprintf("Probability fireball >3: %f\n", f_3);
+
+%% Part B
+% F = event of fireball damage
+% T1, T2 = event of troll hp
+
+pmf_F = [0; 0.25; 0.5; 0.25];
+pmf_T = ones(4, 1).*0.25;
+
+figure; stem(pmf_F); title("PMF of 2d3");
+figure; stem(pmf_T); title("PMF of 1d4");
+
+%% Part C
+
+hp = randi(4,M,2); % make M banks of 2 trolls
+f = randi(2,M,2); % throw 2 die for each spell
+f_dmg = sum(f,2); % compute fireball damage
+hp_new = hp - f_dmg; % attack troll
+kia = hp_new <= 0; % see if dead
+dead = sum(kia,2); % count the dead
+fprintf("Probability of 2 kill: %f\n", sum(dead == 2)/M);
+
+%% Part C Theoretical
+theoretical_dead = 0;
+prob_space = [1,2,3,4];
+%for loop for each troll, iterating through combinations
+%using conditional probability aptly for each case
+%e.g. set of troll hp of [1,1] is killed, at the very least when fireball
+%>=1, such that p(fireball>=1|[1,1]) = 1*(1/4)^2
+for i = prob_space
+    for j = prob_space
+        if i ==4 || j ==4
+            theoretical_dead = theoretical_dead+(1/4)^3;
+        elseif i == 3 || j==3
+            theoretical_dead = theoretical_dead + (3/4)*(1/4)^2;
+        elseif i==2 || j ==2
+            theoretical_dead = theoretical_dead + (1/4)^2;
+        else
+            theoretical_dead = theoretical_dead + (1/4)^2;
+        end
+    end
+end
+
+fprintf("Theoretical probability of 2 kill: %f\n", theoretical_dead);
+%% Part D
+% Each troll killed independently, troll must have health of at least 3
+% otherwise any fireball will kill. Fireball must do less than 3 damage 
+% otherwise it will kill any troll. 
+
+kia(dead~=1,:)=1; % find lone survivors 
+survivor_hp = hp_new(~kia); % check their health 
+fprintf("Mean survivor health: %f\n", mean(survivor_hp));
+
+%% Part D Theoretical
+% R = event of the remaining hp of one troll given that exactly one troll
+%   is dead, 0 otherwise
+%
+% k = event that exactly one troll is dead
+%
+% E(P(R given k)) = sum(r * P(R=r given k))
+%   = sum(r * P(R=r and k)/P(k))
+
+joint_pmf_TF = pmf_T*pmf_T';
+joint_pmf_TF = reshape(joint_pmf_TF(:)*pmf_F', 4, 4, 4);
+
+[T1, T2, F] = ndgrid(1:4);
+
+R = (F >= T1 & F < T2).*(T2 - F) + ...
+    (F >= T2 & F < T1).*(T1 - F);
+
+p_2d = 0;
+for r=1:2
+    p_2d = p_2d + r*sum(joint_pmf_TF(R == r));
+end
+
+p_2d = p_2d/sum(joint_pmf_TF(R > 0));
+fprintf("Theoretical mean survivor health: %f\n", p_2d);
+
+%% Part E 
+% 50% chance of hitting with sword, 
+% 50% change of hitting with hammer given sword hit 
+% I didn't compute the damage probabilities 
+
+roll_sword = randi([0,1],M,1); % generate sword hits
+sword_dmg = sum(randi(6,M,2),2); % generate sword damage 
+roll_hammer = randi([0,1],M,1); % generate potential hammer hits
+hammer_dmg = randi(4,M,1); % generate pontential hammer damage
+% conditional probability achieved by requiring sword and hammer to be true
+dmg = roll_sword.*sword_dmg + roll_sword.*roll_hammer.*hammer_dmg;
+fprintf("Mean Shitvam damage: %f\n", mean(dmg));
+
+%% Part E Theoretical
+% X = dice roll,
+% S = sword damage,
+% H = hammer damage, 
+% SH = sword and hammer damage,
+% O = 0 damage,
+% D = total damage,
+%
+% $P(D) = 0.5*P(O) + 0.25*P(S) + 0.25*P(SH)$
+%
+% note that prob of 0 damage is not counted in expectation
+
+joint_pmf_X = ones(6, 6).*(1/6^2);
+
+[X1, X2] = meshgrid(1:6); 
+S = X1 + X2;
+
+pmf_S = zeros(16, 1);
+for s=2:12
+    pmf_S(s) = sum(joint_pmf_X(S == s));
+end
+
+pmf_H = zeros(16, 1);
+pmf_H(1:4) = 1/4;
+
+joint_pmf_SH = pmf_S*pmf_H';
+[S, H] = meshgrid(1:16);
+SH = S + H;
+
+pmf_SH = zeros(16, 1);
+for sh=2:16
+    pmf_SH(sh) = sum(joint_pmf_SH(SH == sh));
+end
+
+pmf_D = 0.25.*pmf_S + 0.25.*pmf_SH;
+
+p_2e = sum((1:16).*pmf_D');
+fprintf("Theoretical Mean Shitvam damage: %f\n", p_2e);
+##### SOURCE END #####
+--></body></html>
