@@ -4,7 +4,7 @@ clc
 clear all
 close all
 M = 1e6;
-%% Part 1 
+%% Scenario 1 
 % Implement the Bayes MMSE and Linear MMSE estimators from examples 
 % 8.5 and 8.6. Simulate this system by random draws of Y and W, and then 
 % estimating Y from the observations X = Y + W. Verify that your simulation
@@ -25,6 +25,9 @@ fprintf("Estimated MMSE: %f\n", mean((Y - y).^2));
 y = 1/5*X;
 fprintf("Expected MMSE: %f\n", 4/15);
 fprintf("Estimated MMSE: %f\n", mean((Y - y).^2));
+
+% TODO: Make table
+% Fuck tables
 
 function yhat=mmse1(x)
     if (-3 <= x && x < -1) 
