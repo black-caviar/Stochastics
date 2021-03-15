@@ -14,24 +14,31 @@ clear all
 close all
 M = 1e6;
 %M=5
-n = 2
+n = 5
 %% 
-Y = 1 + randn(1,M);
-R = randn(n,M); % make arbitrary rows of R
+sig_Y = 0.4
+sig_R = 1.0
+
+Y = 1 + sig_Y * randn(1,M);
+R = sig_R * randn(n,M); % make arbitrary rows of R
 X = Y + R;
-get_MMSE(1,1)
-a = get_coeff(1, 0, 1, 1, n);
-y = sum(X .* a); % + 1?
+get_MMSE(sig_Y, sig_R)
+
+a = get_coeff(sig_Y, sig_R, n);
+get_MMSE2(sig_Y, a)
+y = 1 + sum((X-1) .* a);
 
 fprintf("Estimated MMSE: %f\n", mean((Y - y).^2));
 
 % Create a function that takes 
 % sigY, sigR, M returns X and sigma R and Y
 % assuming sig is the same for all R?
-function a = get_coeff(uY, uR, sigY, sigR, nR) 
-    C = zeros(nR) + uY;
-    C(1:nR+1:end) = sigY^2 + sigR^2;
-    a = inv(C) * (ones(nR,1) * sigY^2); % Cxy/Cxx is better? 
+function a = get_coeff(sigY, sigR, nR) 
+    % I don't think R has be zero mean or equal variance for this method
+    C = zeros(nR) + sigY^2; % populate matrix with var(Y)
+    C(1:nR+1:end) = sigY^2 + sigR^2; % populate diagonal with var(Xi)
+    a = inv(C) * (ones(nR,1) * sigY^2); % compute coefficients 
+    % Cxy/Cxx is better? 
 end
 
 function E = get_MMSE(sigY, sigR)
@@ -39,4 +46,11 @@ function E = get_MMSE(sigY, sigR)
     % if several sigR are used 
     % see 8.73 
     E = (sigY^2 * sigR^2)/(2*sigY^2 + sigR^2);
+end
+
+function E = get_MMSE2(sigY, a)
+    % Now this is the correct function for arbitrary number of R
+    % can remove previous attempt 
+    % see 8.73 for detail
+    E = sigY^2 - sum(sigY^2 * a);
 end
