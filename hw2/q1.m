@@ -1,5 +1,5 @@
 %% Bayse and Linear MMSE Estimators 
-% See MIT notes 8.5 & 8.6 for more info 
+% Nikita Teplitskiy
 clc
 clear all
 close all
@@ -11,8 +11,8 @@ M = 1e6;
 % is correct by comparing theoretical and empirical values of the MSE. 
 % Report your results in a table.
 %% Example 8.5 
-Y = 1 - 2*rand(1,M);
-W = 2 - 4*rand(1,M);
+Y = 1 - 2*rand(1,M); % $ Y in [-1,1]$
+W = 2 - 4*rand(1,M); % $ W in [-2,2]$
 X = Y + W;
 y = arrayfun(@(x)mmse1(x),X); % shouldn't need lambda wrap but do, why?
 fprintf("Expected MMSE: %f\n", 1/4);
