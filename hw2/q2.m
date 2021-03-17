@@ -14,38 +14,41 @@ M = 1e4;
 %M=5
 sig = linspace(0,10);
 n = 5;
+mmse = @(x1,x2) mean((x1-x2).^2);
 %% 
-Ey = [];
-Eyhat = [];
+Eyy = [];
+Eyyhat = [];
 for i = sig
     [Y,R] = gen_data(i, 1, n, M);
     X = Y + R;
     a = get_coeff(i, 1, n);
-    Ey = [Ey ; get_MMSE(i, a)];
+    Eyy = [Eyy ; get_MMSE(i, a)];
     y = 1 + sum((X-1) .* a);
-    Eyhat = [Eyhat ; mean((Y - y).^2)];
+    Eyyhat = [Eyyhat ; mmse(Y,y)];
 end
-plot(sig, [Ey,Eyhat], 'LineWidth',4)
-ylabel('Mean Squared Error')
-xlabel('Parameter Variance (\sigma)')
-set(gca,'FontSize',18)
-title('Plot of something', 'FontSize', 24);
-hold on
 %%
-Ey = [];
-Eyhat = [];
+Ery = [];
+Eryhat = [];
 for i = sig
     [Y,R] = gen_data(1, i, n, M);
     X = Y + R;
     a = get_coeff(1, i, n);
-    Ey = [Ey ; get_MMSE(1, a)];
+    Ery = [Ery ; get_MMSE(1, a)];
     y = 1 + sum((X-1) .* a);
-    Eyhat = [Eyhat ; mean((Y - y).^2)];
+    Eryhat = [Eryhat ; mean((Y - y).^2)];
 end
-plot(sig, [Ey,Eyhat], 'LineWidth',4)
+plot(sig, [Eyy,Eyyhat,Ery,Eryhat], 'LineWidth',4)
+
+ylabel('Mean Squared Error')
+xlabel('Parameter Variance (\sigma)')
+set(gcf,'Position',[100 100 1000 700])
+set(gca,'FontSize',18)
+title('Plot of something', 'FontSize', 24);
 legend({'$MSE(\sigma_y,y)$','$MSE(\sigma_y,\hat{y})$', ...
     '$MSE(\sigma_r,y)$','$MSE(\sigma_r,\hat{y})$'}, ...
     'Interpreter','latex', 'FontSize', 18, 'Location', 'northwest');
+
+% plot MMSE of MMSE? 
 
 % assuming sig is the same for all R?
 function a = get_coeff(sigY, sigR, nR) 
