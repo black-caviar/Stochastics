@@ -5,7 +5,7 @@ clear all
 close all
 M = 1e6;
 %array to store expected and estimated MMSE and convert to table
-result_arr = zeros(2);
+result_arr = zeros(2,3);
 %% Scenario 1 
 % Implement the Bayes MMSE and Linear MMSE estimators from examples 
 % 8.5 and 8.6. Simulate this system by random draws of Y and W, and then 
@@ -18,8 +18,9 @@ W = 2 - 4*rand(1,M); % $ W in [-2,2]$
 X = Y + W;
 y = arrayfun(@(x)mmse1(x),X); % shouldn't need lambda wrap but do, why?
 
-result_arr(1,1) = 1/4;
-result_arr(1,2) = mean((Y - y).^2);
+result_arr(1,1) = 8.5;
+result_arr(1,2) = 1/4;
+result_arr(1,3) = mean((Y - y).^2);
 % This give 1/4 which is as expected
 % mean((Y - 0).^2) = 1/3 
 
@@ -27,10 +28,11 @@ result_arr(1,2) = mean((Y - y).^2);
 % Linear MMMSE 
 y = 1/5*X;
 
-result_arr(2,1) = 4/15;
-result_arr(2,2) = mean((Y - y).^2);
+result_arr(2,1) = 8.6;
+result_arr(2,2) = 4/15;
+result_arr(2,3) = mean((Y - y).^2);
 
-array2table(result_arr,'VariableNames', {'Expected MMSE','Estimated MMSE'})
+array2table(result_arr,'VariableNames', {'Example #','Expected MMSE','Estimated MMSE'})
 
 
 function yhat=mmse1(x)
@@ -43,5 +45,4 @@ function yhat=mmse1(x)
     else 
         error("Input out of range");
     end
-end
 end
