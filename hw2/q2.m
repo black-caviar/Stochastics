@@ -1,5 +1,5 @@
 %% Bayse and Linear MMSE Estimators 
-% Nikita Teplitskiy
+% Nikita Teplitskiy, Dan Brody, and I-an Huang
 %% Scenario 2
 % Scenario 2: Implement the linear estimator for multiple noisy 
 % observations, similar to example 8.8 from the notes. Extend this example 
