@@ -1,9 +1,11 @@
-%% Bayse and Linear MMSE Estimators 
-% Nikita Teplitskiy
+%% Bayes and Linear MMSE Estimators 
+% Nikita Teplitskiy, Dan Brody, and I-an Huang
 clc
 clear all
 close all
 M = 1e6;
+%array to store expected and estimated MMSE and convert to table
+result_arr = zeros(2);
 %% Scenario 1 
 % Implement the Bayes MMSE and Linear MMSE estimators from examples 
 % 8.5 and 8.6. Simulate this system by random draws of Y and W, and then 
@@ -15,19 +17,21 @@ Y = 1 - 2*rand(1,M); % $ Y in [-1,1]$
 W = 2 - 4*rand(1,M); % $ W in [-2,2]$
 X = Y + W;
 y = arrayfun(@(x)mmse1(x),X); % shouldn't need lambda wrap but do, why?
-fprintf("Expected MMSE: %f\n", 1/4);
-fprintf("Estimated MMSE: %f\n", mean((Y - y).^2));
+
+result_arr(1,1) = 1/4;
+result_arr(1,2) = mean((Y - y).^2);
 % This give 1/4 which is as expected
 % mean((Y - 0).^2) = 1/3 
 
 %% Example 8.6
 % Linear MMMSE 
 y = 1/5*X;
-fprintf("Expected MMSE: %f\n", 4/15);
-fprintf("Estimated MMSE: %f\n", mean((Y - y).^2));
 
-% TODO: Make table
-% Fuck tables
+result_arr(2,1) = 4/15;
+result_arr(2,2) = mean((Y - y).^2);
+
+array2table(result_arr,'VariableNames', {'Expected MMSE','Estimated MMSE'})
+
 
 function yhat=mmse1(x)
     if (-3 <= x && x < -1) 
@@ -39,4 +43,5 @@ function yhat=mmse1(x)
     else 
         error("Input out of range");
     end
+end
 end
