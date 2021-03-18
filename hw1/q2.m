@@ -1,3 +1,7 @@
+% ECE302 Spring 2021
+% I-An Huang
+% Nikita Teplitskiy
+% Dan Brody
 %% EpicQUESTion 2
 M = 10;
 M = 1e6; % number of experiments to perform 
@@ -23,7 +27,7 @@ fprintf("Probability fireball >3: %f\n", f_3);
 pmf_F = [0; 0.25; 0.5; 0.25];
 pmf_T = ones(4, 1).*0.25;
 
-figure; stem(pmf_F); title("PMF of 2d3");
+figure; stem(pmf_F); title("PMF of 2d2");
 figure; stem(pmf_T); title("PMF of 1d4");
 
 %% Part C
