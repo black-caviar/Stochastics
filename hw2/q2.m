@@ -43,7 +43,7 @@ ylabel('Mean Squared Error')
 xlabel('Parameter Variance (\sigma)')
 set(gcf,'Position',[100 100 1000 700])
 set(gca,'FontSize',18)
-title('Plot of something', 'FontSize', 24);
+title('MMSE', 'FontSize', 24);
 legend({'$MSE(\sigma_y,y)$','$MSE(\sigma_y,\hat{y})$', ...
     '$MSE(\sigma_r,y)$','$MSE(\sigma_r,\hat{y})$'}, ...
     'Interpreter','latex', 'FontSize', 18, 'Location', 'northwest');

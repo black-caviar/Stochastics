@@ -1,0 +1,204 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Bayse and Linear MMSE Estimators</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-03-17"><meta name="DC.source" content="q2.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Bayse and Linear MMSE Estimators</h1><!--introduction--><p>Nikita Teplitskiy, Dan Brody, and I-an Huang</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Scenario 2</a></li></ul></div><h2 id="1">Scenario 2</h2><p>Scenario 2: Implement the linear estimator for multiple noisy observations, similar to example 8.8 from the notes. Extend this example so that it works for an arbitrary number of observations. Use Gaussian random variables for Y and R. Set &#956;y = 1. Experiment with a few different variances for both Y and R. On one plot, show the mean squared error of your simulation compared to the theoretical values for at least 2 different pairs of variances.</p><pre class="codeinput">clearvars
+close <span class="string">all</span>
+M = 1e4;
+<span class="comment">%M=5</span>
+sig = linspace(0,10);
+n = 5;
+mmse = @(x1,x2) mean((x1-x2).^2);
+</pre><pre class="codeinput">Eyy = [];
+Eyyhat = [];
+<span class="keyword">for</span> i = sig
+    [Y,R] = gen_data(i, 1, n, M);
+    X = Y + R;
+    a = get_coeff(i, 1, n);
+    Eyy = [Eyy ; get_MMSE(i, a)];
+    y = 1 + sum((X-1) .* a);
+    Eyyhat = [Eyyhat ; mmse(Y,y)];
+<span class="keyword">end</span>
+</pre><pre class="codeinput">Ery = [];
+Eryhat = [];
+<span class="keyword">for</span> i = sig
+    [Y,R] = gen_data(1, i, n, M);
+    X = Y + R;
+    a = get_coeff(1, i, n);
+    Ery = [Ery ; get_MMSE(1, a)];
+    y = 1 + sum((X-1) .* a);
+    Eryhat = [Eryhat ; mean((Y - y).^2)];
+<span class="keyword">end</span>
+plot(sig, [Eyy,Eyyhat,Ery,Eryhat], <span class="string">'LineWidth'</span>,4)
+
+ylabel(<span class="string">'Mean Squared Error'</span>)
+xlabel(<span class="string">'Parameter Variance (\sigma)'</span>)
+set(gcf,<span class="string">'Position'</span>,[100 100 1000 700])
+set(gca,<span class="string">'FontSize'</span>,18)
+title(<span class="string">'MMSE'</span>, <span class="string">'FontSize'</span>, 24);
+legend({<span class="string">'$MSE(\sigma_y,y)$'</span>,<span class="string">'$MSE(\sigma_y,\hat{y})$'</span>, <span class="keyword">...</span>
+    <span class="string">'$MSE(\sigma_r,y)$'</span>,<span class="string">'$MSE(\sigma_r,\hat{y})$'</span>}, <span class="keyword">...</span>
+    <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 18, <span class="string">'Location'</span>, <span class="string">'northwest'</span>);
+
+<span class="comment">% plot MMSE of MMSE?</span>
+
+<span class="comment">% assuming sig is the same for all R?</span>
+<span class="keyword">function</span> a = get_coeff(sigY, sigR, nR)
+    <span class="comment">% R doesn't have to be equal variance for this method</span>
+    C = zeros(nR) + sigY^2; <span class="comment">% populate matrix with var(Y)</span>
+    C(1:nR+1:end) = sigY^2 + sigR^2; <span class="comment">% populate diagonal with var(Xi)</span>
+    a = inv(C) * (ones(nR,1) * sigY^2); <span class="comment">% compute coefficients</span>
+    <span class="comment">% Cxy/Cxx is better?</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> E = get_MMSE(sigY, a)
+    <span class="comment">% This is the correct function for arbitrary number of R</span>
+    <span class="comment">% see 8.73 for detail</span>
+    E = sigY^2 - sum(sigY^2 * a);
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> [Y,R] = gen_data(sig_Y, sig_R, n, M)
+    Y = 1 + sig_Y * randn(1,M);
+    R = sig_R * randn(n,M);
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">Warning: Matrix is singular to working precision. 
+</pre><img vspace="5" hspace="5" src="q2_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Bayse and Linear MMSE Estimators 
+% Nikita Teplitskiy, Dan Brody, and I-an Huang
+%% Scenario 2
+% Scenario 2: Implement the linear estimator for multiple noisy 
+% observations, similar to example 8.8 from the notes. Extend this example 
+% so that it works for an arbitrary number of observations. Use Gaussian 
+% random variables for Y and R. Set μy = 1. Experiment with a few different
+% variances for both Y and R. On one plot, show the mean squared error of 
+% your simulation compared to the theoretical values for at least 2 
+% different pairs of variances.
+clearvars
+close all
+M = 1e4;
+%M=5
+sig = linspace(0,10);
+n = 5;
+mmse = @(x1,x2) mean((x1-x2).^2);
+%% 
+Eyy = [];
+Eyyhat = [];
+for i = sig
+    [Y,R] = gen_data(i, 1, n, M);
+    X = Y + R;
+    a = get_coeff(i, 1, n);
+    Eyy = [Eyy ; get_MMSE(i, a)];
+    y = 1 + sum((X-1) .* a);
+    Eyyhat = [Eyyhat ; mmse(Y,y)];
+end
+%%
+Ery = [];
+Eryhat = [];
+for i = sig
+    [Y,R] = gen_data(1, i, n, M);
+    X = Y + R;
+    a = get_coeff(1, i, n);
+    Ery = [Ery ; get_MMSE(1, a)];
+    y = 1 + sum((X-1) .* a);
+    Eryhat = [Eryhat ; mean((Y - y).^2)];
+end
+plot(sig, [Eyy,Eyyhat,Ery,Eryhat], 'LineWidth',4)
+
+ylabel('Mean Squared Error')
+xlabel('Parameter Variance (\sigma)')
+set(gcf,'Position',[100 100 1000 700])
+set(gca,'FontSize',18)
+title('MMSE', 'FontSize', 24);
+legend({'$MSE(\sigma_y,y)$','$MSE(\sigma_y,\hat{y})$', ...
+    '$MSE(\sigma_r,y)$','$MSE(\sigma_r,\hat{y})$'}, ...
+    'Interpreter','latex', 'FontSize', 18, 'Location', 'northwest');
+
+% plot MMSE of MMSE? 
+
+% assuming sig is the same for all R?
+function a = get_coeff(sigY, sigR, nR) 
+    % R doesn't have to be equal variance for this method
+    C = zeros(nR) + sigY^2; % populate matrix with var(Y)
+    C(1:nR+1:end) = sigY^2 + sigR^2; % populate diagonal with var(Xi)
+    a = inv(C) * (ones(nR,1) * sigY^2); % compute coefficients 
+    % Cxy/Cxx is better? 
+end
+
+function E = get_MMSE(sigY, a)
+    % This is the correct function for arbitrary number of R
+    % see 8.73 for detail
+    E = sigY^2 - sum(sigY^2 * a);
+end
+
+function [Y,R] = gen_data(sig_Y, sig_R, n, M)
+    Y = 1 + sig_Y * randn(1,M);
+    R = sig_R * randn(n,M);
+end
+
+##### SOURCE END #####
+--></body></html>
