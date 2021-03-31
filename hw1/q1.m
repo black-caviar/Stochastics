@@ -1,3 +1,7 @@
+% ECE302 Spring 2021
+% I-An Huang
+% Nikita Teplitskiy
+% Dan Brody
 %% EpicQUESTion 1 
 % X = event of a dice roll,
 % Y = event of generating an ability score,
