@@ -45,28 +45,47 @@ end
 mse_ray
 plot(1:N,mse_ray(1,:))
 
-%% For Data
-% refactor estimators into functions
+%% Part 2: 
+% The data in the .mat file, data.mat, has been drawn from either an 
+% exponential distribution, or a Rayleigh distribution. Compute the 
+% max-likelihood estimate of the parameter using both. Using your 
+% estimators that you developed in part 2, compute the max-likelihood 
+% estimates of the parameter. Which distribution do you think the data 
+% was drawn from? Justify your answer.
+
+% plot data distribution
 close all
 load('data.mat', '-mat')
-histogram(data, 'Normalization','pdf') % This really looks like Rayleigh 
+histogram(data, 'Normalization','pdf') 
 hold on
-ray_pred = ml_ray(data);
 
-ray = @(x,s) x./(s.^2) .* exp(-x.^2./(2*s^2))
-x = linspace(min(data),max(data));
-plot(x, ray(x,ray_pred))
-
+% compute max-likelihood estimates
+ray_pred = ml_ray(data)
 exp_pred = ml_exp(data)
-expo = @(x,l) l*exp(-l*x)
-plot(x, expo(x, exp_pred))
 
+% define PDFs of Rayleigh and exponential random variables
+ray = @(x,s) x./(s.^2) .* exp(-x.^2./(2*s^2));
+expo = @(x,l) l*exp(-l*x);
 
+% plot PDFs of Rayleigh and exponential against data distribution
+x = linspace(min(data),max(data));
+plot(x, ray(x, ray_pred));
+plot(x, expo(x, exp_pred));
+ylabel('$f(x)$','Interpreter','latex')
+xlabel('$x$','Interpreter','latex')
+title('Distribution Comparisons');
+legend({'data','Rayleigh', ...
+    'exponential'},'Interpreter','latex');
+% Data is drawn from Rayleigh distribution because
+% they match more closely.
+
+% ML estimator of Rayleigh random variable
 function s_hat = ml_ray(x)
     dim = size(x);
     s_hat = sqrt(sum(x.^2, 2)./(2*dim(2)));
 end
 
+% ML estimator of exponential random variable
 function l_hat = ml_exp(x)
     dim = size(x);
     l_hat = dim(2)./sum(x, 2);
