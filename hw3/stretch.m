@@ -21,3 +21,5 @@ lhat = @(x) sum(x)/length(x);
 for i=0:100
     est(i+1,:) = [lhat(y(1:i)), lhat(y(i+1:end))];
 end
+
+plot(0:100,est')
