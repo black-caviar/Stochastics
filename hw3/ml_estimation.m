@@ -1,5 +1,5 @@
 %% Maximum likelihood estimation
-% Names go here
+% Dan Brody, I-An Huang, Nikita Teplitskiy
 %% Part 1
 % Part 1: Generate random draws from both of the exponential and Rayleigh 
 % random variables. You can use the EXPRND and RAYRND functions in MATLAB 
@@ -38,7 +38,7 @@ for lambda=1:4
         % Compute statistics for exponential distribution
         X = exprnd(1/lambda, n, M); % generate random variable 
         lambda_hat = exp_estimator(n, X); % estimate parameter
-        exp_MSE(n, lambda) = mean((lambda - lambda_hat).^2); % compute MMSE
+        exp_MSE(n, lambda) = mean((lambda - lambda_hat).^2); % compute MSE
         exp_bias(n, lambda) = mean(lambda - lambda_hat); % compute bias
         exp_var(n, lambda) = var(lambda_hat); % compute variance 
         
@@ -134,13 +134,13 @@ expo = @(x,l) l*exp(-l*x);
 
 % plot PDFs of Rayleigh and exponential against data distribution
 x = linspace(min(data),max(data));
-plot(x, ray(x, ray_pred));
-plot(x, expo(x, exp_pred));
-ylabel('$f(x)$','Interpreter','latex')
-xlabel('$x$','Interpreter','latex')
-title('Distribution Comparisons');
-legend({'data','Rayleigh', ...
-    'exponential'},'Interpreter','latex');
+plot(x, ray(x, ray_pred), 'LineWidth', 5);
+plot(x, expo(x, exp_pred), 'LineWidth', 5);
+ylabel('$f(x)$','Interpreter','latex','FontSize', 20)
+xlabel('$x$','Interpreter','latex','FontSize', 20)
+title('Distribution Comparisons','FontSize', 16);
+legend({'Data','Rayleigh', ...
+    'Exponential'},'Interpreter','latex','FontSize', 16);
 
 set(gcf, 'Position', [0 0 1200 850])
 

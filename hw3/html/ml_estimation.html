@@ -1,0 +1,369 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Maximum likelihood estimation</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-03-31"><meta name="DC.source" content="ml_estimation.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Maximum likelihood estimation</h1><!--introduction--><p>Dan Brody, I-An Huang, Nikita Teplitskiy</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Part 1</a></li><li><a href="#3">Part 2</a></li></ul></div><h2 id="1">Part 1</h2><p>Part 1: Generate random draws from both of the exponential and Rayleigh random variables. You can use the EXPRND and RAYRND functions in MATLAB for this. Implement your ML estimators in MATLAB and plot the MSE with respect to # of observations. On separate plots, plot the bias and the variance of your estimators, with respect to the # of observations. Do this for a couple of values of lambda.</p><pre class="codeinput">clc
+clear <span class="string">all</span>
+close <span class="string">all</span>
+
+M = 1e4;
+N = 12;
+
+<span class="comment">% ML estimator for exponential random variable</span>
+<span class="comment">% N: number of observations</span>
+<span class="comment">% X: N by M array of observations</span>
+exp_estimator = @(N, X) N./sum(X, 1);
+
+<span class="comment">% ML estimator for Rayleigh random variable</span>
+<span class="comment">% N: number of observations</span>
+<span class="comment">% X: N by M array of observations</span>
+ray_estimator = @(N, X) sqrt(sum(X.^2, 1)./(2*N));
+
+<span class="comment">% preallocate arrays</span>
+exp_MSE = zeros(10, 4);
+ray_MSE = zeros(10, 4);
+exp_bias = zeros(10, 4);
+ray_bias = zeros(10, 4);
+exp_var = zeros(10, 4);
+ray_var = zeros(10, 4);
+<span class="comment">% Compute for 4 parameter values</span>
+<span class="keyword">for</span> lambda=1:4
+    alpha = lambda;
+    <span class="keyword">for</span> n=1:N
+        <span class="comment">% Compute statistics for exponential distribution</span>
+        X = exprnd(1/lambda, n, M); <span class="comment">% generate random variable</span>
+        lambda_hat = exp_estimator(n, X); <span class="comment">% estimate parameter</span>
+        exp_MSE(n, lambda) = mean((lambda - lambda_hat).^2); <span class="comment">% compute MSE</span>
+        exp_bias(n, lambda) = mean(lambda - lambda_hat); <span class="comment">% compute bias</span>
+        exp_var(n, lambda) = var(lambda_hat); <span class="comment">% compute variance</span>
+
+        <span class="comment">% Compute statistics for Rayleigh distribution</span>
+        X = raylrnd(alpha, n, M);
+        alpha_hat = ray_estimator(n, X);
+        ray_MSE(n, alpha) = mean((alpha - alpha_hat).^2);
+        ray_bias(n, alpha) = mean(alpha - alpha_hat);
+        ray_var(n, alpha) = var(alpha_hat);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><p>MSE of first 2 observations too large to plot</p><pre class="codeinput">subplot(3, 2, 1)
+plot(3:N, exp_MSE(3:N,:))
+ylabel(<span class="string">'Mean Squared Error'</span>)
+xlabel(<span class="string">'# of Observations'</span>)
+title(<span class="string">'MLE of exponential random variable'</span>);
+legend({<span class="string">'$\lambda = 1$'</span>,<span class="string">'$\lambda = 2$'</span>, <span class="keyword">...</span>
+    <span class="string">'$\lambda = 3$'</span>,<span class="string">'$\lambda = 4$'</span>}, <span class="keyword">...</span>
+    <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+
+subplot(3, 2, 2)
+plot(3:N, ray_MSE(3:N,:))
+ylabel(<span class="string">'Mean Squared Error'</span>)
+xlabel(<span class="string">'# of Observations'</span>)
+title(<span class="string">'MLE of Rayleigh random variable'</span>);
+legend({<span class="string">'$\alpha = 1$'</span>,<span class="string">'$\alpha = 2$'</span>, <span class="keyword">...</span>
+    <span class="string">'$\alpha = 3$'</span>,<span class="string">'$\alpha = 4$'</span>}, <span class="keyword">...</span>
+    <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+
+subplot(3, 2, 3)
+plot(3:N, exp_bias(3:N,:))
+ylabel(<span class="string">'Bias'</span>)
+xlabel(<span class="string">'# of Observations'</span>)
+title(<span class="string">'MLE of exponential random variable'</span>);
+legend({<span class="string">'$\lambda = 1$'</span>,<span class="string">'$\lambda = 2$'</span>, <span class="keyword">...</span>
+    <span class="string">'$\lambda = 3$'</span>,<span class="string">'$\lambda = 4$'</span>}, <span class="keyword">...</span>
+    <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+
+subplot(3, 2, 4)
+plot(3:N, ray_bias(3:N,:))
+ylabel(<span class="string">'Bias'</span>)
+xlabel(<span class="string">'# of Observations'</span>)
+title(<span class="string">'MLE of Rayleigh random variable'</span>);
+legend({<span class="string">'$\alpha = 1$'</span>,<span class="string">'$\alpha = 2$'</span>, <span class="keyword">...</span>
+    <span class="string">'$\alpha = 3$'</span>,<span class="string">'$\alpha = 4$'</span>}, <span class="keyword">...</span>
+    <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+
+subplot(3, 2, 5)
+plot(3:N, exp_var(3:N,:))
+ylabel(<span class="string">'Variance'</span>)
+xlabel(<span class="string">'# of Observations'</span>)
+title(<span class="string">'MLE of exponential random variable'</span>);
+legend({<span class="string">'$\lambda = 1$'</span>,<span class="string">'$\lambda = 2$'</span>, <span class="keyword">...</span>
+    <span class="string">'$\lambda = 3$'</span>,<span class="string">'$\lambda = 4$'</span>}, <span class="keyword">...</span>
+    <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+
+subplot(3, 2, 6)
+plot(3:N, ray_var(3:N,:))
+ylabel(<span class="string">'Variance'</span>)
+xlabel(<span class="string">'# of Observations'</span>)
+title(<span class="string">'MLE of Rayleigh random variable'</span>);
+legend({<span class="string">'$\alpha = 1$'</span>,<span class="string">'$\alpha = 2$'</span>, <span class="keyword">...</span>
+    <span class="string">'$\alpha = 3$'</span>,<span class="string">'$\alpha = 4$'</span>}, <span class="keyword">...</span>
+    <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+
+set(gcf, <span class="string">'Position'</span>, [0 0 1200 850])
+</pre><img vspace="5" hspace="5" src="ml_estimation_01.png" alt=""> <h2 id="3">Part 2</h2><p>The data in the .mat file, data.mat, has been drawn from either an exponential distribution, or a Rayleigh distribution. Compute the max-likelihood estimate of the parameter using both. Using your estimators that you developed in part 2, compute the max-likelihood estimates of the parameter. Which distribution do you think the data was drawn from? Justify your answer.</p><pre class="codeinput"><span class="comment">% plot data distribution</span>
+close <span class="string">all</span>
+load(<span class="string">'data.mat'</span>, <span class="string">'-mat'</span>)
+histogram(data, <span class="string">'Normalization'</span>,<span class="string">'pdf'</span>)
+hold <span class="string">on</span>
+
+<span class="comment">% compute max-likelihood estimates</span>
+ray_pred = ml_ray(data);
+exp_pred = ml_exp(data);
+
+<span class="comment">% define PDFs of Rayleigh and exponential random variables</span>
+ray = @(x,s) x./(s.^2) .* exp(-x.^2./(2*s^2));
+expo = @(x,l) l*exp(-l*x);
+
+<span class="comment">% plot PDFs of Rayleigh and exponential against data distribution</span>
+x = linspace(min(data),max(data));
+plot(x, ray(x, ray_pred), <span class="string">'LineWidth'</span>, 5);
+plot(x, expo(x, exp_pred), <span class="string">'LineWidth'</span>, 5);
+ylabel(<span class="string">'$f(x)$'</span>,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>,<span class="string">'FontSize'</span>, 20)
+xlabel(<span class="string">'$x$'</span>,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>,<span class="string">'FontSize'</span>, 20)
+title(<span class="string">'Distribution Comparisons'</span>,<span class="string">'FontSize'</span>, 16);
+legend({<span class="string">'Data'</span>,<span class="string">'Rayleigh'</span>, <span class="keyword">...</span>
+    <span class="string">'Exponential'</span>},<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>,<span class="string">'FontSize'</span>, 16);
+
+set(gcf, <span class="string">'Position'</span>, [0 0 1200 850])
+
+<span class="comment">% ML estimator of Rayleigh random variable</span>
+<span class="keyword">function</span> s_hat = ml_ray(x)
+    dim = size(x);
+    s_hat = sqrt(sum(x.^2, 2)./(2*dim(2)));
+<span class="keyword">end</span>
+
+<span class="comment">% ML estimator of exponential random variable</span>
+<span class="keyword">function</span> l_hat = ml_exp(x)
+    dim = size(x);
+    l_hat = dim(2)./sum(x, 2);
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="ml_estimation_02.png" alt=""> <p>Data is drawn from Rayleigh distribution because they match more closely.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Maximum likelihood estimation
+% Dan Brody, I-An Huang, Nikita Teplitskiy
+%% Part 1
+% Part 1: Generate random draws from both of the exponential and Rayleigh 
+% random variables. You can use the EXPRND and RAYRND functions in MATLAB 
+% for this. Implement your ML estimators in MATLAB and plot the MSE with 
+% respect to # of observations. On separate plots, plot the bias and the 
+% variance of your estimators, with respect to the # of observations. Do 
+% this for a couple of values of lambda.
+clc
+clear all
+close all
+
+M = 1e4;
+N = 12;
+
+% ML estimator for exponential random variable
+% N: number of observations
+% X: N by M array of observations
+exp_estimator = @(N, X) N./sum(X, 1);
+
+% ML estimator for Rayleigh random variable
+% N: number of observations
+% X: N by M array of observations
+ray_estimator = @(N, X) sqrt(sum(X.^2, 1)./(2*N));
+
+% preallocate arrays 
+exp_MSE = zeros(10, 4);
+ray_MSE = zeros(10, 4);
+exp_bias = zeros(10, 4);
+ray_bias = zeros(10, 4);
+exp_var = zeros(10, 4);
+ray_var = zeros(10, 4);
+% Compute for 4 parameter values 
+for lambda=1:4
+    alpha = lambda;
+    for n=1:N
+        % Compute statistics for exponential distribution
+        X = exprnd(1/lambda, n, M); % generate random variable 
+        lambda_hat = exp_estimator(n, X); % estimate parameter
+        exp_MSE(n, lambda) = mean((lambda - lambda_hat).^2); % compute MSE
+        exp_bias(n, lambda) = mean(lambda - lambda_hat); % compute bias
+        exp_var(n, lambda) = var(lambda_hat); % compute variance 
+        
+        % Compute statistics for Rayleigh distribution 
+        X = raylrnd(alpha, n, M);
+        alpha_hat = ray_estimator(n, X);
+        ray_MSE(n, alpha) = mean((alpha - alpha_hat).^2);
+        ray_bias(n, alpha) = mean(alpha - alpha_hat);
+        ray_var(n, alpha) = var(alpha_hat);
+    end
+end
+
+%%
+% MSE of first 2 observations too large to plot
+
+subplot(3, 2, 1)
+plot(3:N, exp_MSE(3:N,:))
+ylabel('Mean Squared Error')
+xlabel('# of Observations')
+title('MLE of exponential random variable');
+legend({'$\lambda = 1$','$\lambda = 2$', ...
+    '$\lambda = 3$','$\lambda = 4$'}, ...
+    'Interpreter','latex');
+
+subplot(3, 2, 2)
+plot(3:N, ray_MSE(3:N,:))
+ylabel('Mean Squared Error')
+xlabel('# of Observations')
+title('MLE of Rayleigh random variable');
+legend({'$\alpha = 1$','$\alpha = 2$', ...
+    '$\alpha = 3$','$\alpha = 4$'}, ...
+    'Interpreter','latex');
+
+subplot(3, 2, 3)
+plot(3:N, exp_bias(3:N,:))
+ylabel('Bias')
+xlabel('# of Observations')
+title('MLE of exponential random variable');
+legend({'$\lambda = 1$','$\lambda = 2$', ...
+    '$\lambda = 3$','$\lambda = 4$'}, ...
+    'Interpreter','latex');
+
+subplot(3, 2, 4)
+plot(3:N, ray_bias(3:N,:))
+ylabel('Bias')
+xlabel('# of Observations')
+title('MLE of Rayleigh random variable');
+legend({'$\alpha = 1$','$\alpha = 2$', ...
+    '$\alpha = 3$','$\alpha = 4$'}, ...
+    'Interpreter','latex');
+
+subplot(3, 2, 5)
+plot(3:N, exp_var(3:N,:))
+ylabel('Variance')
+xlabel('# of Observations')
+title('MLE of exponential random variable');
+legend({'$\lambda = 1$','$\lambda = 2$', ...
+    '$\lambda = 3$','$\lambda = 4$'}, ...
+    'Interpreter','latex');
+
+subplot(3, 2, 6)
+plot(3:N, ray_var(3:N,:))
+ylabel('Variance')
+xlabel('# of Observations')
+title('MLE of Rayleigh random variable');
+legend({'$\alpha = 1$','$\alpha = 2$', ...
+    '$\alpha = 3$','$\alpha = 4$'}, ...
+    'Interpreter','latex');
+
+set(gcf, 'Position', [0 0 1200 850])
+
+%% Part 2
+% The data in the .mat file, data.mat, has been drawn from either an 
+% exponential distribution, or a Rayleigh distribution. Compute the 
+% max-likelihood estimate of the parameter using both. Using your 
+% estimators that you developed in part 2, compute the max-likelihood 
+% estimates of the parameter. Which distribution do you think the data 
+% was drawn from? Justify your answer.
+
+% plot data distribution
+close all
+load('data.mat', '-mat')
+histogram(data, 'Normalization','pdf') 
+hold on
+
+% compute max-likelihood estimates
+ray_pred = ml_ray(data);
+exp_pred = ml_exp(data);
+
+% define PDFs of Rayleigh and exponential random variables
+ray = @(x,s) x./(s.^2) .* exp(-x.^2./(2*s^2));
+expo = @(x,l) l*exp(-l*x);
+
+% plot PDFs of Rayleigh and exponential against data distribution
+x = linspace(min(data),max(data));
+plot(x, ray(x, ray_pred), 'LineWidth', 5);
+plot(x, expo(x, exp_pred), 'LineWidth', 5);
+ylabel('$f(x)$','Interpreter','latex','FontSize', 20)
+xlabel('$x$','Interpreter','latex','FontSize', 20)
+title('Distribution Comparisons','FontSize', 16);
+legend({'Data','Rayleigh', ...
+    'Exponential'},'Interpreter','latex','FontSize', 16);
+
+set(gcf, 'Position', [0 0 1200 850])
+
+% ML estimator of Rayleigh random variable
+function s_hat = ml_ray(x)
+    dim = size(x);
+    s_hat = sqrt(sum(x.^2, 2)./(2*dim(2)));
+end
+
+% ML estimator of exponential random variable
+function l_hat = ml_exp(x)
+    dim = size(x);
+    l_hat = dim(2)./sum(x, 2);
+end
+
+%%
+% Data is drawn from Rayleigh distribution because
+% they match more closely.
+
+##### SOURCE END #####
+--></body></html>

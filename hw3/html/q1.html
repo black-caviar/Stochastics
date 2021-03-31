@@ -1,0 +1,281 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Part 1</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-03-31"><meta name="DC.source" content="q1.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Part 1</h1><!--introduction--><p>Names go here</p><!--/introduction--><p>Generate random draws from both of the exponential and Rayleigh random variables. You can use the EXPRND and RAYRND functions in MATLAB for this. Implement your ML estimators in MATLAB and plot the MSE with respect to # of observations. On separate plots, plot the bias and the variance of your estimators, with respect to the # of observations. Do this for a couple of values of lambda.</p><pre class="codeinput">clc
+clear <span class="string">all</span>
+close <span class="string">all</span>
+
+M = 1e4;
+N = 12;
+
+<span class="comment">% ML estimator for exponential random variable</span>
+<span class="comment">% N: number of observations</span>
+<span class="comment">% X: N by M array of observations</span>
+exp_estimator = @(N, X) N./sum(X, 1);
+
+<span class="comment">% ML estimator for Rayleigh random variable</span>
+<span class="comment">% N: number of observations</span>
+<span class="comment">% X: N by M array of observations</span>
+ray_estimator = @(N, X) sqrt(sum(X.^2, 1)./(2*N));
+
+<span class="comment">% preallocate arrays</span>
+exp_MSE = zeros(10, 4);
+ray_MSE = zeros(10, 4);
+exp_bias = zeros(10, 4);
+ray_bias = zeros(10, 4);
+exp_var = zeros(10, 4);
+ray_var = zeros(10, 4);
+<span class="comment">% Compute for 4 parameter values</span>
+<span class="keyword">for</span> lambda=1:4
+    alpha = lambda;
+    <span class="keyword">for</span> n=1:N
+        <span class="comment">% Compute statistics for exponential distribution</span>
+        X = exprnd(1/lambda, n, M); <span class="comment">% generate random variable</span>
+        lambda_hat = exp_estimator(n, X); <span class="comment">% estimate parameter</span>
+        exp_MSE(n, lambda) = mean((lambda - lambda_hat).^2); <span class="comment">% compute MMSE</span>
+        exp_bias(n, lambda) = mean(lambda - lambda_hat); <span class="comment">% compute bias</span>
+        exp_var(n, lambda) = var(lambda_hat); <span class="comment">% compute variance</span>
+
+        <span class="comment">% Compute statistics for Rayleigh distribution</span>
+        X = raylrnd(alpha, n, M);
+        alpha_hat = ray_estimator(n, X);
+        ray_MSE(n, alpha) = mean((alpha - alpha_hat).^2);
+        ray_bias(n, alpha) = mean(alpha - alpha_hat);
+        ray_var(n, alpha) = var(lambda_hat);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><p>MSE of first 2 observations too large to plot</p><pre class="codeinput">subplot(3, 2, 1)
+plot(3:N, exp_MSE(3:N,:))
+ylabel(<span class="string">'Mean Squared Error'</span>)
+xlabel(<span class="string">'# of Observations'</span>)
+title(<span class="string">'MLE of exponential random variable'</span>);
+legend({<span class="string">'$\lambda = 1$'</span>,<span class="string">'$\lambda = 2$'</span>, <span class="keyword">...</span>
+    <span class="string">'$\lambda = 3$'</span>,<span class="string">'$\lambda = 4$'</span>}, <span class="keyword">...</span>
+    <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+
+subplot(3, 2, 2)
+plot(3:N, ray_MSE(3:N,:))
+ylabel(<span class="string">'Mean Squared Error'</span>)
+xlabel(<span class="string">'# of Observations'</span>)
+title(<span class="string">'MLE of Rayleigh random variable'</span>);
+legend({<span class="string">'$\alpha = 1$'</span>,<span class="string">'$\alpha = 2$'</span>, <span class="keyword">...</span>
+    <span class="string">'$\alpha = 3$'</span>,<span class="string">'$\alpha = 4$'</span>}, <span class="keyword">...</span>
+    <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+
+subplot(3, 2, 3)
+plot(3:N, exp_bias(3:N,:))
+ylabel(<span class="string">'Bias'</span>)
+xlabel(<span class="string">'# of Observations'</span>)
+title(<span class="string">'MLE of exponential random variable'</span>);
+legend({<span class="string">'$\lambda = 1$'</span>,<span class="string">'$\lambda = 2$'</span>, <span class="keyword">...</span>
+    <span class="string">'$\lambda = 3$'</span>,<span class="string">'$\lambda = 4$'</span>}, <span class="keyword">...</span>
+    <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+
+subplot(3, 2, 4)
+plot(3:N, ray_bias(3:N,:))
+ylabel(<span class="string">'Bias'</span>)
+xlabel(<span class="string">'# of Observations'</span>)
+title(<span class="string">'MLE of Rayleigh random variable'</span>);
+legend({<span class="string">'$\alpha = 1$'</span>,<span class="string">'$\alpha = 2$'</span>, <span class="keyword">...</span>
+    <span class="string">'$\alpha = 3$'</span>,<span class="string">'$\alpha = 4$'</span>}, <span class="keyword">...</span>
+    <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+
+subplot(3, 2, 5)
+plot(3:N, exp_var(3:N,:))
+ylabel(<span class="string">'Variance'</span>)
+xlabel(<span class="string">'# of Observations'</span>)
+title(<span class="string">'MLE of exponential random variable'</span>);
+legend({<span class="string">'$\lambda = 1$'</span>,<span class="string">'$\lambda = 2$'</span>, <span class="keyword">...</span>
+    <span class="string">'$\lambda = 3$'</span>,<span class="string">'$\lambda = 4$'</span>}, <span class="keyword">...</span>
+    <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+
+subplot(3, 2, 6)
+plot(3:N, ray_var(3:N,:))
+ylabel(<span class="string">'Variance'</span>)
+xlabel(<span class="string">'# of Observations'</span>)
+title(<span class="string">'MLE of Rayleigh random variable'</span>);
+legend({<span class="string">'$\alpha = 1$'</span>,<span class="string">'$\alpha = 2$'</span>, <span class="keyword">...</span>
+    <span class="string">'$\alpha = 3$'</span>,<span class="string">'$\alpha = 4$'</span>}, <span class="keyword">...</span>
+    <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+
+set(gcf, <span class="string">'Position'</span>, [0 0 1200 850])
+</pre><img vspace="5" hspace="5" src="q1_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Part 1
+% Names go here
+%%
+% Generate random draws from both of the exponential and 
+% Rayleigh random variables. You can use the EXPRND and RAYRND functions 
+% in MATLAB for this. Implement your ML estimators in MATLAB and plot 
+% the MSE with respect to # of observations. On separate plots, plot 
+% the bias and the variance of your estimators, with respect to the # of 
+% observations. Do this for a couple of values of lambda.
+clc
+clear all
+close all
+
+M = 1e4;
+N = 12;
+
+% ML estimator for exponential random variable
+% N: number of observations
+% X: N by M array of observations
+exp_estimator = @(N, X) N./sum(X, 1);
+
+% ML estimator for Rayleigh random variable
+% N: number of observations
+% X: N by M array of observations
+ray_estimator = @(N, X) sqrt(sum(X.^2, 1)./(2*N));
+
+% preallocate arrays 
+exp_MSE = zeros(10, 4);
+ray_MSE = zeros(10, 4);
+exp_bias = zeros(10, 4);
+ray_bias = zeros(10, 4);
+exp_var = zeros(10, 4);
+ray_var = zeros(10, 4);
+% Compute for 4 parameter values 
+for lambda=1:4
+    alpha = lambda;
+    for n=1:N
+        % Compute statistics for exponential distribution
+        X = exprnd(1/lambda, n, M); % generate random variable 
+        lambda_hat = exp_estimator(n, X); % estimate parameter
+        exp_MSE(n, lambda) = mean((lambda - lambda_hat).^2); % compute MMSE
+        exp_bias(n, lambda) = mean(lambda - lambda_hat); % compute bias
+        exp_var(n, lambda) = var(lambda_hat); % compute variance 
+        
+        % Compute statistics for Rayleigh distribution 
+        X = raylrnd(alpha, n, M);
+        alpha_hat = ray_estimator(n, X);
+        ray_MSE(n, alpha) = mean((alpha - alpha_hat).^2);
+        ray_bias(n, alpha) = mean(alpha - alpha_hat);
+        ray_var(n, alpha) = var(lambda_hat);
+    end
+end
+
+%%
+% MSE of first 2 observations too large to plot
+
+subplot(3, 2, 1)
+plot(3:N, exp_MSE(3:N,:))
+ylabel('Mean Squared Error')
+xlabel('# of Observations')
+title('MLE of exponential random variable');
+legend({'$\lambda = 1$','$\lambda = 2$', ...
+    '$\lambda = 3$','$\lambda = 4$'}, ...
+    'Interpreter','latex');
+
+subplot(3, 2, 2)
+plot(3:N, ray_MSE(3:N,:))
+ylabel('Mean Squared Error')
+xlabel('# of Observations')
+title('MLE of Rayleigh random variable');
+legend({'$\alpha = 1$','$\alpha = 2$', ...
+    '$\alpha = 3$','$\alpha = 4$'}, ...
+    'Interpreter','latex');
+
+subplot(3, 2, 3)
+plot(3:N, exp_bias(3:N,:))
+ylabel('Bias')
+xlabel('# of Observations')
+title('MLE of exponential random variable');
+legend({'$\lambda = 1$','$\lambda = 2$', ...
+    '$\lambda = 3$','$\lambda = 4$'}, ...
+    'Interpreter','latex');
+
+subplot(3, 2, 4)
+plot(3:N, ray_bias(3:N,:))
+ylabel('Bias')
+xlabel('# of Observations')
+title('MLE of Rayleigh random variable');
+legend({'$\alpha = 1$','$\alpha = 2$', ...
+    '$\alpha = 3$','$\alpha = 4$'}, ...
+    'Interpreter','latex');
+
+subplot(3, 2, 5)
+plot(3:N, exp_var(3:N,:))
+ylabel('Variance')
+xlabel('# of Observations')
+title('MLE of exponential random variable');
+legend({'$\lambda = 1$','$\lambda = 2$', ...
+    '$\lambda = 3$','$\lambda = 4$'}, ...
+    'Interpreter','latex');
+
+subplot(3, 2, 6)
+plot(3:N, ray_var(3:N,:))
+ylabel('Variance')
+xlabel('# of Observations')
+title('MLE of Rayleigh random variable');
+legend({'$\alpha = 1$','$\alpha = 2$', ...
+    '$\alpha = 3$','$\alpha = 4$'}, ...
+    'Interpreter','latex');
+
+set(gcf, 'Position', [0 0 1200 850])
+##### SOURCE END #####
+--></body></html>
