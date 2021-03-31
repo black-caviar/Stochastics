@@ -47,7 +47,7 @@ for lambda=1:4
         alpha_hat = ray_estimator(n, X);
         ray_MSE(n, alpha) = mean((alpha - alpha_hat).^2);
         ray_bias(n, alpha) = mean(alpha - alpha_hat);
-        ray_var(n, alpha) = var(lambda_hat);
+        ray_var(n, alpha) = var(alpha_hat);
     end
 end
 
