@@ -22,4 +22,7 @@ for i=0:100
     est(i+1,:) = [lhat(y(1:i)), lhat(y(i+1:end))];
 end
 
-plot(0:100,est')
+
+plot(0:100, l1+zeros(1,101));
+plot(0:100, l2+zeros(1,101));
+plot(0:100,est', 'LineWidth', 2)
