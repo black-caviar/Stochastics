@@ -23,6 +23,19 @@ for i=0:100
 end
 
 
-plot(0:100, l1+zeros(1,101));
-plot(0:100, l2+zeros(1,101));
+figure()
 plot(0:100,est', 'LineWidth', 2)
+xline(n)
+yline(l1)
+yline(l2)
+
+%%
+v = zeros(size(est'))
+k = est'
+for i = 1:101
+    v(1,i) = var(k(1,2:i));
+    v(2,i) = var(k(2,i+1:end-1));
+end
+figure()
+plot(1:101,v)
+xline(n)
