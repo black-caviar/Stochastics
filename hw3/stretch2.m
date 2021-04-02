@@ -46,7 +46,7 @@ loglikelihood = @(X, n) -n*l1_est(X, n) - (N - n)*l2_est(X, n) ...
 % find max of log likelihoods
 n_hat = 1;
 loss = loglikelihood(X, n_hat);
-for n=2:99
+for n=2:N-1
     if loglikelihood(X, n) > loss
         n_hat = n;
         loss = loglikelihood(X, n);
