@@ -4,6 +4,8 @@ close all
 
 load('Iris.mat')
 
+
+
 % So I assume that there are 3 normally distributed 
 
 % Kind of elegant way to split but does not shuffle 
@@ -28,8 +30,9 @@ for i = 1:3
     prb(i,:) = mvnpdf(train, mu(i,:), Sig(:,:,i));
 end
 
-[~,train_test] = max(prb)
-train_test == t_labels'
+[~,train_test] = max(prb);
+train_prob_error = 1-(sum(train_test == t_labels')/length(train_test));
+fprintf("total probability of error on train set is " + string(train_prob_error));
 
 %% Lets test classifier 
 prb = zeros(3, length(val));
@@ -37,12 +40,12 @@ for i = 1:3
     prb(i,:) = mvnpdf(val, mu(i,:), Sig(:,:,i));
 end
 
-[~,val_test] = max(prb)
+[~,val_test] = max(prb);
 v_labels = labels(~split)';
-val_test == v_labels 
-% it should majority correct 
+test_prob_error = 1-(sum(val_test == v_labels )/length(val_test));
+fprintf(" and total probability of error on test set is " + string(test_prob_error));
 
-%% Confusing Matrix 
+%% Confusion Matrix 
 
 conf = zeros(3,3);
 for i = 1:3
@@ -50,8 +53,28 @@ for i = 1:3
     conf(i,2) = sum((val_test == i) & (v_labels == 2));
     conf(i,3) = sum((val_test == i) & (v_labels == 3));
 end
-conf
 
-count = [sum(v_labels==1), sum(v_labels==2), sum(v_labels==3)];
-%array2table(count, 'VariableNames', {'1, 2, 3'})
-% Fuck tables 
+formatSpec_newline = '\n';
+fprintf(formatSpec_newline);
+fprintf('CONFUSION MATRIX')
+fprintf(formatSpec_newline);
+for i = 1:3
+    for j = 1:3
+        if(i==1)
+        fprintf("    " +string(j)+" ");
+        end
+    end
+end
+
+fprintf(formatSpec_newline);
+formatSpec = '%d    %d';
+for i = 1:3
+    for j = 1:3
+        if(j==1)
+            fprintf(formatSpec_newline);
+            fprintf(formatSpec,i,(conf(i,j)));
+        else
+            fprintf(string("    " + conf(i,j)))
+        end
+    end
+end
