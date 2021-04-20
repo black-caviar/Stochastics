@@ -38,5 +38,20 @@ for i = 1:3
 end
 
 [~,val_test] = max(prb)
-val_test == labels(~split)' 
+v_labels = labels(~split)';
+val_test == v_labels 
 % it should majority correct 
+
+%% Confusing Matrix 
+
+conf = zeros(3,3);
+for i = 1:3
+    conf(i,1) = sum((val_test == i) & (v_labels == 1));
+    conf(i,2) = sum((val_test == i) & (v_labels == 2));
+    conf(i,3) = sum((val_test == i) & (v_labels == 3));
+end
+conf
+
+count = [sum(v_labels==1), sum(v_labels==2), sum(v_labels==3)];
+%array2table(count, 'VariableNames', {'1, 2, 3'})
+% Fuck tables 
