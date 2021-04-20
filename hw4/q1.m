@@ -4,13 +4,13 @@
 % Consider a radar detection system, where we want to make a determination
 % if a target is present or absent. If the target is present, Y = A + X, 
 % where A is a known constant. If the target is not present, Y = X. X is a 
-% zero mean Gaussian with variance ?2. The a priori probability that the 
+% zero mean Gaussian with variance sig^2. The a priori probability that the 
 % target is not present is .8. The signal to noise ratio is the ratio of 
-% A to ?2, you must choose values for this exercise that give insightful 
+% A to sig^2, you must choose values for this exercise that give insightful 
 % results.
 
 clc
-clear all
+clear variables
 close all
 
 P0 = 0.8;
@@ -58,7 +58,7 @@ var = [0.1 0.1 0.1 0.1];
 P_D = P_Detection(Gamma, var, A);
 P_F = P_False_Alarm(Gamma, var);
 
-plot(P_F, P_D)
+plot(P_F, P_D, 'LineWidth', 3)
 ylabel('Probability of Detection')
 xlabel('Probability of False Alarm')
 title('Reciever Operating Curve, Same Variance Different Mean');
@@ -80,7 +80,7 @@ P_D = P_Detection(Gamma, var, A);
 P_F = P_False_Alarm(Gamma, var);
 
 hold on
-scatter(P_F, P_D, 'DisplayName', 'Decision Rules for Part C')
+scatter(P_F, P_D, 90, 'filled', 'DisplayName', 'Decision Rules for Part C')
 
 %% Part D
 % Using the cost structure in part c), Select one SNR value and plot the 
@@ -98,7 +98,7 @@ P_FALSE = @(P1) qfunc(thresh(P1)./sqrt(var));
 exp_cost = @(P1) 10.*P_MISS(P1).*P1 + P_FALSE(P1).*(1 - P1);
 
 hold off
-plot(P1, exp_cost(P1));
+plot(P1, exp_cost(P1), 'LineWidth', 3);
 ylabel('Expected Cost')
 xlabel('Target Present Probability')
 title('Cost Structure of Part C, SNR = 5');
@@ -144,7 +144,7 @@ var_z = [0.1 0.5 1 2];
 P_D = P_Detection(Gamma, var);
 P_F = P_False_Alarm(Gamma, var_z);
 
-plot(P_F, P_D)
+plot(P_F, P_D, 'LineWidth', 3)
 ylabel('Probability of Detection')
 xlabel('Probability of False Alarm')
 title('Reciever Operating Curve, Same Mean Different Variance');
