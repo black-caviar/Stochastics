@@ -1,80 +1,58 @@
+%% Part 2, Iris Classification 
+% Dan Brody, I-An Huang, Nikita Teplitskiy
+%%
 clc
 clear variables
 close all
 
 load('Iris.mat')
+%% Model class distributions 
+% Assume there are 3 distinct normal distributions across 4 dimensions
 
-
-
-% So I assume that there are 3 normally distributed 
-
-% Kind of elegant way to split but does not shuffle 
-% Shuffle really doesn't matter 
-split = false(1,length(features)); 
+split = false(1,length(features)); % generate data split 
 split(randperm(length(features), length(features)/2)) = 1;
-train = features(split,:); 
-val = features(~split,:);
+train = features(split,:); % training set
+t_labels = labels(split)'; % training labels 
 
-mu = zeros(3,4);
-Sig = zeros(4,4,3);
-t_labels = labels(split);
+mu = zeros(3,4); % mean vector
+Sig = zeros(4,4,3); % covariance matrix 
 for i = 1:3
-    X_i = train(t_labels==i,:);
+    X_i = train(t_labels==i,:); % extract examples of class i 
     mu(i,:) = mean(X_i);
     Sig(:,:,i) = cov(X_i);
 end
 
-% move this out to a function
-prb = zeros(3, length(train));
-for i = 1:3
-    prb(i,:) = mvnpdf(train, mu(i,:), Sig(:,:,i));
-end
+train_pred = predict(train, mu, Sig); % predict classes 
 
-[~,train_test] = max(prb);
-train_prob_error = 1-(sum(train_test == t_labels')/length(train_test));
-fprintf("total probability of error on train set is " + string(train_prob_error));
+train_error = 1-(sum(train_pred == t_labels)/length(train_pred));
+fprintf("Training error: %f\n", train_error); 
+% Why doesn't this print get published correctly?
+%% Test classifier 
+val = features(~split,:); % validation set 
+v_labels = labels(~split)'; % validation labels
+val_pred = predict(val, mu, Sig); % predict validation set 
 
-%% Lets test classifier 
-prb = zeros(3, length(val));
-for i = 1:3
-    prb(i,:) = mvnpdf(val, mu(i,:), Sig(:,:,i));
-end
-
-[~,val_test] = max(prb);
-v_labels = labels(~split)';
-test_prob_error = 1-(sum(val_test == v_labels )/length(val_test));
-fprintf(" and total probability of error on test set is " + string(test_prob_error));
+val_error = 1-(sum(val_pred == v_labels )/length(val_pred));
+fprintf("Validation error: %f\n", val_error);
 
 %% Confusion Matrix 
-
+% Generate confusion matrix to show success and failure conditions 
 conf = zeros(3,3);
 for i = 1:3
-    conf(i,1) = sum((val_test == i) & (v_labels == 1));
-    conf(i,2) = sum((val_test == i) & (v_labels == 2));
-    conf(i,3) = sum((val_test == i) & (v_labels == 3));
+    % check classification 
+    conf(i,1) = sum((val_pred == i) & (v_labels == 1));
+    conf(i,2) = sum((val_pred == i) & (v_labels == 2));
+    conf(i,3) = sum((val_pred == i) & (v_labels == 3));
 end
 
-formatSpec_newline = '\n';
-fprintf(formatSpec_newline);
 fprintf('CONFUSION MATRIX')
-fprintf(formatSpec_newline);
-for i = 1:3
-    for j = 1:3
-        if(i==1)
-        fprintf("    " +string(j)+" ");
-        end
-    end
-end
+array2table(conf, 'VariableNames', {'1','2','3'}, 'RowNames', {'1','2','3'})
 
-fprintf(formatSpec_newline);
-formatSpec = '%d    %d';
-for i = 1:3
-    for j = 1:3
-        if(j==1)
-            fprintf(formatSpec_newline);
-            fprintf(formatSpec,i,(conf(i,j)));
-        else
-            fprintf(string("    " + conf(i,j)))
-        end
+%%
+function class = predict(data, mu, Sig)
+    prb = zeros(3, length(data));
+    for i = 1:3
+        prb(i,:) = mvnpdf(data, mu(i,:), Sig(:,:,i));
     end
+    [~,class] = max(prb);
 end
