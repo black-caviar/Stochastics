@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Part 1, Radar Detection</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-04-20"><meta name="DC.source" content="q1.m"><style type="text/css">
+      --><title>Part 1, Radar Detection</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-04-20"><meta name="DC.source" content="q1.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -98,7 +98,7 @@ P_err =
 
 P_err_exp =
 
-    0.1440
+    0.1240
 
 </pre><h2 id="3">Part B</h2><p>Implement a simulation that plots the receiver operating curve for this detector. Plot the receiver operating curve for several signal to noise ratios.</p><pre class="codeinput"><span class="comment">% probability of detection and false alarm</span>
 <span class="comment">% as a function of threshold Gamma, variance var, and mean A</span>
@@ -133,7 +133,7 @@ A = 0.5;
 P1 = linspace(0.01, 0.99); <span class="comment">% avoid 0 division</span>
 
 <span class="comment">% anonymous functions for defining expected cost</span>
-thresh = @(P1) A/2 + var.*log((1 - P1)./P1)./A;
+thresh = @(P1) A/2 + var.*log((1 - P1)./(10.*P1))./A;
 P_MISS = @(P1) 1 - qfunc((thresh(P1) - A)./sqrt(var));
 P_FALSE = @(P1) qfunc(thresh(P1)./sqrt(var));
 exp_cost = @(P1) 10.*P_MISS(P1).*P1 + P_FALSE(P1).*(1 - P1);
@@ -181,8 +181,8 @@ plot(P_F, P_D, <span class="string">'LineWidth'</span>, 3)
 ylabel(<span class="string">'Probability of Detection'</span>)
 xlabel(<span class="string">'Probability of False Alarm'</span>)
 title(<span class="string">'Reciever Operating Curve, Same Mean Different Variance'</span>);
-legend({<span class="string">'$\sigma_z = 0.1$'</span>,<span class="string">'$\sigma_z = 0.5$'</span>, <span class="keyword">...</span>
-    <span class="string">'$\sigma_z = 1$'</span>,<span class="string">'$\sigma_z = 2$'</span>}, <span class="keyword">...</span>
+legend({<span class="string">'$\sigma_z^2 = 0.1$'</span>,<span class="string">'$\sigma_z^2 = 0.5$'</span>, <span class="keyword">...</span>
+    <span class="string">'$\sigma_z^2 = 1$'</span>,<span class="string">'$\sigma_z^2 = 2$'</span>}, <span class="keyword">...</span>
     <span class="string">'Location'</span>, <span class="string">'southeast'</span>, <span class="keyword">...</span>
     <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
 </pre><pre class="codeoutput">
@@ -193,9 +193,9 @@ P_err2 =
 
 P_err_exp2 =
 
-    0.4590
+    0.4180
 
-</pre><img vspace="5" hspace="5" src="q1_04.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="q1_04.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Part 1, Radar Detection
 % Dan Brody, I-An Huang, Nikita Teplitskiy
@@ -291,7 +291,7 @@ A = 0.5;
 P1 = linspace(0.01, 0.99); % avoid 0 division
 
 % anonymous functions for defining expected cost
-thresh = @(P1) A/2 + var.*log((1 - P1)./P1)./A;
+thresh = @(P1) A/2 + var.*log((1 - P1)./(10.*P1))./A;
 P_MISS = @(P1) 1 - qfunc((thresh(P1) - A)./sqrt(var));
 P_FALSE = @(P1) qfunc(thresh(P1)./sqrt(var));
 exp_cost = @(P1) 10.*P_MISS(P1).*P1 + P_FALSE(P1).*(1 - P1);
@@ -347,8 +347,8 @@ plot(P_F, P_D, 'LineWidth', 3)
 ylabel('Probability of Detection')
 xlabel('Probability of False Alarm')
 title('Reciever Operating Curve, Same Mean Different Variance');
-legend({'$\sigma_z = 0.1$','$\sigma_z = 0.5$', ...
-    '$\sigma_z = 1$','$\sigma_z = 2$'}, ...
+legend({'$\sigma_z^2 = 0.1$','$\sigma_z^2 = 0.5$', ...
+    '$\sigma_z^2 = 1$','$\sigma_z^2 = 2$'}, ...
     'Location', 'southeast', ...
     'Interpreter','latex');
 

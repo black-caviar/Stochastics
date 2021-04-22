@@ -92,7 +92,7 @@ A = 0.5;
 P1 = linspace(0.01, 0.99); % avoid 0 division
 
 % anonymous functions for defining expected cost
-thresh = @(P1) A/2 + var.*log((1 - P1)./P1)./A;
+thresh = @(P1) A/2 + var.*log((1 - P1)./(10.*P1))./A;
 P_MISS = @(P1) 1 - qfunc((thresh(P1) - A)./sqrt(var));
 P_FALSE = @(P1) qfunc(thresh(P1)./sqrt(var));
 exp_cost = @(P1) 10.*P_MISS(P1).*P1 + P_FALSE(P1).*(1 - P1);
@@ -148,7 +148,7 @@ plot(P_F, P_D, 'LineWidth', 3)
 ylabel('Probability of Detection')
 xlabel('Probability of False Alarm')
 title('Reciever Operating Curve, Same Mean Different Variance');
-legend({'$\sigma_z = 0.1$','$\sigma_z = 0.5$', ...
-    '$\sigma_z = 1$','$\sigma_z = 2$'}, ...
+legend({'$\sigma_z^2 = 0.1$','$\sigma_z^2 = 0.5$', ...
+    '$\sigma_z^2 = 1$','$\sigma_z^2 = 2$'}, ...
     'Location', 'southeast', ...
     'Interpreter','latex');
