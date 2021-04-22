@@ -6,6 +6,7 @@ clear variables
 close all
 
 load('Iris.mat')
+
 %% Model class distributions 
 % Assume there are 3 distinct normal distributions across 4 dimensions
 
@@ -23,10 +24,10 @@ for i = 1:3
 end
 
 train_pred = predict(train, mu, Sig); % predict classes 
-
+%%
 train_error = 1-(sum(train_pred == t_labels)/length(train_pred));
 fprintf("Training error: %f\n", train_error); 
-% Why doesn't this print get published correctly?
+
 %% Test classifier 
 val = features(~split,:); % validation set 
 v_labels = labels(~split)'; % validation labels
@@ -46,7 +47,8 @@ for i = 1:3
 end
 
 fprintf('CONFUSION MATRIX')
-array2table(conf, 'VariableNames', {'1','2','3'}, 'RowNames', {'1','2','3'})
+array2table(conf, 'VariableNames', {'P1','P2','P3'}, ...
+    'RowNames', {'L1','L2','L3'})
 
 %%
 function class = predict(data, mu, Sig)
