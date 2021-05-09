@@ -1,0 +1,240 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>FIR MMSE</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-05-08"><meta name="DC.source" content="mmse_fir.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>FIR MMSE</h1><!--introduction--><p>Dan Brody, I-An Huang, Nikita Teplitskiy</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Find and implement FIR Filters</a></li><li><a href="#6">Sanity Check</a></li><li><a href="#7">Function: Find FIR Filter</a></li><li><a href="#8">Function: Simulation</a></li></ul></div><h2 id="1">Find and implement FIR Filters</h2><pre class="codeinput">clc
+clear <span class="string">variables</span>
+close <span class="string">all</span>
+
+M = 1e6;
+var = 0.1;
+c = [1 0.2 0.4];
+</pre><pre>find FIR Filters</pre><pre class="codeinput">h4 = get_filter(c, var, 4).';
+h6 = get_filter(c, var, 6).';
+h10 = get_filter(c, var, 10).';
+</pre><pre>generate inputs</pre><pre class="codeinput">s = randi(2, 1, M).*2 - 3;
+d = randn(1, M).*sqrt(var);
+</pre><pre>simulate inputs</pre><pre class="codeinput">s_hat4 = simulate(s, d, c, h4, M);
+s_hat6 = simulate(s, d, c, h6, M);
+s_hat10 = simulate(s, d, c, h10, M);
+</pre><pre>calculate and plot MSE</pre><pre class="codeinput">MSE = @(s, s_hat) mean((s - s_hat).^2);
+mse4 = MSE(s, s_hat4);
+mse6 = MSE(s, s_hat6);
+mse10 = MSE(s, s_hat10);
+
+disp(table(mse4, mse6, mse10))
+</pre><pre class="codeoutput">     mse4       mse6       mse10 
+    _______    _______    _______
+
+    0.11476    0.10712    0.10635
+
+</pre><h2 id="6">Sanity Check</h2><pre class="codeinput">M = 20;
+
+<span class="comment">% generate inputs</span>
+s = randi(2, 1, M).*2 - 3;
+d = randn(1, M).*sqrt(var);
+
+<span class="comment">% simulate inputs</span>
+s_hat4 = simulate(s, d, c, h4, M);
+s_hat6 = simulate(s, d, c, h6, M);
+s_hat10 = simulate(s, d, c, h10, M);
+
+stem(0:(M-1), [s; s_hat4; s_hat6; s_hat10].', <span class="string">'filled'</span>)
+ylabel(<span class="string">'$s[n]$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+xlabel(<span class="string">'$n$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+axis([-inf inf -2 2])
+title(<span class="string">'Linear Prediction Simulation'</span>);
+legend({<span class="string">'$s[n]$'</span>,<span class="string">'$\hat{s}[n], N = 4$'</span>, <span class="keyword">...</span>
+    <span class="string">'$\hat{s}[n], N = 6$'</span>,<span class="string">'$\hat{s}[n], N = 10$'</span>}, <span class="keyword">...</span>
+    <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+</pre><img vspace="5" hspace="5" src="mmse_fir_01.png" alt=""> <h2 id="7">Function: Find FIR Filter</h2><pre>c: input filter
+var: noise power
+N: length of FIR filter</pre><pre class="codeinput"><span class="keyword">function</span> h = get_filter(c, var, N)
+
+<span class="comment">% find autocorrelation vector r</span>
+r = conv(c, flip(c));
+r((length(r) + 1)/2) = r((length(r) + 1)/2) + var;
+
+<span class="comment">% generate autocorrelation matrix Rrr</span>
+ex_size = N*2 - 1;
+ex_r = zeros(1, ex_size);
+ex_r((ex_size - length(r))/2 + 1:(ex_size - length(r))/2 + length(r)) <span class="keyword">...</span>
+    = r;
+ex_R = toeplitz(ex_r);
+Rrr = ex_R(1:N, N:end);
+
+<span class="comment">% generate cross-correlation matrix Rsr</span>
+Rsr = zeros(N, 1);
+Rsr(1) = 1;
+
+h = Rrr \ Rsr;
+<span class="keyword">end</span>
+</pre><h2 id="8">Function: Simulation</h2><pre class="codeinput"><span class="keyword">function</span> s_hat = simulate(s, d, c, h, M)
+r = conv(c, s);
+r = r(1:M);
+r = r + d;
+s_hat = conv(h, r);
+s_hat = s_hat(1:M);
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% FIR MMSE
+% Dan Brody, I-An Huang, Nikita Teplitskiy
+%% Find and implement FIR Filters
+
+clc
+clear variables
+close all
+
+M = 1e6;
+var = 0.1;
+c = [1 0.2 0.4];
+
+%%
+%  find FIR Filters
+h4 = get_filter(c, var, 4).';
+h6 = get_filter(c, var, 6).';
+h10 = get_filter(c, var, 10).';
+
+%%
+%  generate inputs
+s = randi(2, 1, M).*2 - 3;
+d = randn(1, M).*sqrt(var);
+
+%%
+%  simulate inputs
+s_hat4 = simulate(s, d, c, h4, M);
+s_hat6 = simulate(s, d, c, h6, M);
+s_hat10 = simulate(s, d, c, h10, M);
+
+%%
+%  calculate and plot MSE
+MSE = @(s, s_hat) mean((s - s_hat).^2);
+mse4 = MSE(s, s_hat4);
+mse6 = MSE(s, s_hat6);
+mse10 = MSE(s, s_hat10);
+
+disp(table(mse4, mse6, mse10))
+
+%% Sanity Check
+M = 20;
+
+% generate inputs
+s = randi(2, 1, M).*2 - 3;
+d = randn(1, M).*sqrt(var);
+
+% simulate inputs
+s_hat4 = simulate(s, d, c, h4, M);
+s_hat6 = simulate(s, d, c, h6, M);
+s_hat10 = simulate(s, d, c, h10, M);
+
+stem(0:(M-1), [s; s_hat4; s_hat6; s_hat10].', 'filled')
+ylabel('$s[n]$', 'Interpreter', 'latex')
+xlabel('$n$', 'Interpreter', 'latex')
+axis([-inf inf -2 2])
+title('Linear Prediction Simulation');
+legend({'$s[n]$','$\hat{s}[n], N = 4$', ...
+    '$\hat{s}[n], N = 6$','$\hat{s}[n], N = 10$'}, ...
+    'Interpreter', 'latex');
+
+%% Function: Find FIR Filter
+% 
+%  c: input filter
+%  var: noise power 
+%  N: length of FIR filter
+%
+function h = get_filter(c, var, N)
+
+% find autocorrelation vector r
+r = conv(c, flip(c));
+r((length(r) + 1)/2) = r((length(r) + 1)/2) + var;
+
+% generate autocorrelation matrix Rrr
+ex_size = N*2 - 1;
+ex_r = zeros(1, ex_size);
+ex_r((ex_size - length(r))/2 + 1:(ex_size - length(r))/2 + length(r)) ...
+    = r;
+ex_R = toeplitz(ex_r);
+Rrr = ex_R(1:N, N:end);
+
+% generate cross-correlation matrix Rsr
+Rsr = zeros(N, 1);
+Rsr(1) = 1;
+
+h = Rrr \ Rsr;
+end
+
+%% Function: Simulation
+function s_hat = simulate(s, d, c, h, M)
+r = conv(c, s);
+r = r(1:M);
+r = r + d;
+s_hat = conv(h, r);
+s_hat = s_hat(1:M);
+end
+##### SOURCE END #####
+--></body></html>
